@@ -12,14 +12,14 @@ func main() {
 
 	// Usuário
 	mux.HandleFunc("GET /usuario/{id}/", crud.GetUsuario)
-	mux.HandleFunc("POST /usuario/", crud.PostUsuario)
+	mux.HandleFunc("POST /usuario", crud.PostUsuario)
 
 	// Localização
-	mux.HandleFunc("GET /localizacao/{id}/", crud.GetLocalizacao)
+	mux.HandleFunc("GET /local/{id}/", crud.GetLocalizacao)
 
 	// Corpo d'água
-	mux.HandleFunc("GET /corpo/{id}/", crud.GetUsuario)
-	mux.HandleFunc("POST /corpo/", crud.GetUsuario)
+	mux.HandleFunc("GET /corpo/{id}/", crud.GetCorpo)
+	mux.HandleFunc("POST /corpo", crud.PostCorpo)
 
 	log.Output(0, "Servindo na porta 8080")
 	http.ListenAndServe(":8080", mux)
