@@ -46,3 +46,16 @@ func GetLocalizacao(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(local)
 }
 
+func GetLocalizacaoTodos(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "GET TODOS Localizacao")
+
+	db := banco.Banco()
+
+	var locais []Localizacao
+	db.Find(&locais)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(locais)
+}
+

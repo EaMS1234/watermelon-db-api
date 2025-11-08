@@ -52,3 +52,16 @@ func PostUsuario(w http.ResponseWriter, r *http.Request) {
 	db.Create(&usuario)
 }
 
+func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "GET TODOS Usuario")
+
+	db := banco.Banco()
+
+	var usuarios []Usuario
+	db.Find(&usuarios)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(usuarios)
+}
+

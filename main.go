@@ -10,16 +10,16 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	// Usuário
-	mux.HandleFunc("GET /usuario/{id}/", crud.GetUsuario)
-	mux.HandleFunc("POST /usuario", crud.PostUsuario)
+	mux.HandleFunc("GET /usuario/", crud.GetUsuarioTodos)    // Todos os usuários
+	mux.HandleFunc("GET /usuario/{id}/", crud.GetUsuario)    // Usuário por ID
+	mux.HandleFunc("POST /usuario", crud.PostUsuario)        // Adicionar usuário
 
-	// Localização
-	mux.HandleFunc("GET /local/{id}/", crud.GetLocalizacao)
+	mux.HandleFunc("GET /local/", crud.GetLocalizacaoTodos)  // Todas as localizações
+	mux.HandleFunc("GET /local/{id}/", crud.GetLocalizacao)  // Localização por ID
 
-	// Corpo d'água
-	mux.HandleFunc("GET /corpo/{id}/", crud.GetCorpo)
-	mux.HandleFunc("POST /corpo", crud.PostCorpo)
+	mux.HandleFunc("GET /corpo/", crud.GetCorpoTodos)        // Todos os Corpos d'Água
+	mux.HandleFunc("GET /corpo/{id}/", crud.GetCorpo)        // Corpos d'Água por ID
+	mux.HandleFunc("POST /corpo", crud.PostCorpo)            // Adicionar Corpo d'Água
 
 	log.Output(0, "Servindo na porta 8080")
 	http.ListenAndServe(":8080", mux)

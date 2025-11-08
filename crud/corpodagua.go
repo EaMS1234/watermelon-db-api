@@ -59,3 +59,14 @@ func PostCorpo(w http.ResponseWriter, r *http.Request) {
 	db.Create(&corpo)
 }
 
+func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
+	db := banco.Banco()
+
+	var corpos []Corpo
+	db.Find(&corpos)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(corpos)
+}
+
