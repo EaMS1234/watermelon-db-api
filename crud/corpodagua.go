@@ -12,7 +12,7 @@ import (
 type Corpo struct{
 	Nome string `json:"nome"`
 	Tipo string `json:"tipo"`
-	ID_Corpo_d_agua int `json:"id"`
+	ID_Corpo_d_agua int `json:"id" gorm:"primaryKey"`
 	Locais []Localizacao `json:"locais" gorm:"-"`
 }
 
@@ -22,7 +22,7 @@ func (Corpo) TableName() string {
 
 
 func GetCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_Corpo_d_agua = %v" + r.PathValue("id"))
+	log.Output(1, "GET ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -59,7 +59,18 @@ func PostCorpo(w http.ResponseWriter, r *http.Request) {
 	db.Create(&corpo)
 }
 
+func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "DELETE ID_Corpo_d_agua = " + r.PathValue("id"))
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
+	banco.Banco().Delete(&Corpo{}, id)
+}
+
 func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "GET TODOS Corpo_d_agua")
+
 	db := banco.Banco()
 
 	var corpos []Corpo

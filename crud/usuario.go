@@ -13,7 +13,7 @@ type Usuario struct{
 	Nome_de_usuario string `json:"nome"`
 	E_mail string `json:"email"`
 	Senha string `json:"senha"`
-	ID_usuario int `json:"id"`
+	ID_usuario int `json:"id" gorm:"primaryKey"`
 }
 
 func (Usuario) TableName() string {
@@ -22,7 +22,7 @@ func (Usuario) TableName() string {
 
 
 func GetUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_usuario = %v" + r.PathValue("id"))
+	log.Output(1, "GET ID_usuario = " + r.PathValue("id"))
 
 	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -50,6 +50,15 @@ func PostUsuario(w http.ResponseWriter, r *http.Request) {
 	usuario.Senha = r.FormValue("senha")
 
 	db.Create(&usuario)
+}
+
+func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "Delete ID_usuario = " + r.PathValue("id"))
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
+	banco.Banco().Delete(&Usuario{}, id)
 }
 
 func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {

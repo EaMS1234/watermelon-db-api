@@ -22,7 +22,7 @@ func (Localizacao) TableName() string {
 
 
 func GetLocalizacao(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_localizacao = %v" + r.PathValue("id"))
+	log.Output(1, "GET ID_localizacao = " + r.PathValue("id"))
 
 	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
