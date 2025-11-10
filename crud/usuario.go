@@ -2,7 +2,6 @@ package crud
 
 import (
 	"api/banco"
-	"fmt"
 	"log"
 
 	"encoding/json"
@@ -25,12 +24,11 @@ func (Usuario) TableName() string {
 func GetUsuario(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, "GET ID_usuario = " + r.PathValue("id"))
 
-	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
 
 	var usuario Usuario
-	db.First(&usuario, id)
+	banco.Banco().First(&usuario, id)
 
 	usuario.Senha = ""
 
@@ -45,8 +43,6 @@ func PostUsuario(w http.ResponseWriter, r *http.Request) {
 	var usuario Usuario;
 
 	json.NewDecoder(r.Body).Decode(&usuario)
-
-	fmt.Println(usuario)
 
 	banco.Banco().Create(&usuario)
 }
@@ -63,10 +59,8 @@ func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
 func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, "GET TODOS Usuario")
 
-	db := banco.Banco()
-
 	var usuarios []Usuario
-	db.Find(&usuarios)
+	banco.Banco().Find(&usuarios)
 
 	for i := range usuarios {
 		usuarios[i].Senha = "";
