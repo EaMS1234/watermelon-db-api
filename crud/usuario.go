@@ -2,6 +2,7 @@ package crud
 
 import (
 	"api/banco"
+	"fmt"
 	"log"
 
 	"encoding/json"
@@ -29,7 +30,7 @@ func GetUsuario(w http.ResponseWriter, r *http.Request) {
 	if err != nil {panic(err)}
 
 	var usuario Usuario
-	db.First(&usuario, "ID_usuario = ?", id)
+	db.First(&usuario, id)
 
 	usuario.Senha = ""
 
@@ -41,15 +42,13 @@ func GetUsuario(w http.ResponseWriter, r *http.Request) {
 func PostUsuario(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, "POST Usuario")
 
-	db := banco.Banco()
-
 	var usuario Usuario;
 
-	usuario.Nome_de_usuario = r.FormValue("nome")
-	usuario.E_mail = r.FormValue("email")
-	usuario.Senha = r.FormValue("senha")
+	json.NewDecoder(r.Body).Decode(&usuario)
 
-	db.Create(&usuario)
+	fmt.Println(usuario)
+
+	banco.Banco().Create(&usuario)
 }
 
 func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
@@ -72,5 +71,21 @@ func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(usuarios)
+}
+
+func PatchUsuario(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "PATCH ID_usuario = " + r.PathValue("id"))
+
+	db := banco.Banco()
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
+	var usuario Usuario
+	db.First(&usuario, id)
+
+	json.NewDecoder(r.Body).Decode(&usuario)
+
+	db.Save(&usuario)
 }
 
