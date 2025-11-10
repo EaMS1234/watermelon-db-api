@@ -10,20 +10,23 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /usuario", crud.GetUsuarioTodos)       // Todos os usuários
-	mux.HandleFunc("GET /usuario/{id}", crud.GetUsuario)       // Usuário por ID
-	mux.HandleFunc("POST /usuario", crud.PostUsuario)          // Adicionar usuário
-	mux.HandleFunc("DELETE /usuario/{id}", crud.DeleteUsuario) // Remove um usuário por ID
-	mux.HandleFunc("PATCH /usuario/{id}", crud.PatchUsuario)   // Altera um usuário por ID
+	mux.HandleFunc("GET /usuario", crud.GetUsuarioTodos)            // Todos os usuários
+	mux.HandleFunc("GET /usuario/{id}", crud.GetUsuario)            // Usuário por ID
+	mux.HandleFunc("POST /usuario", crud.PostUsuario)               // Adicionar usuário
+	mux.HandleFunc("DELETE /usuario/{id}", crud.DeleteUsuario)      // Remove um usuário por ID
+	mux.HandleFunc("PATCH /usuario/{id}", crud.PatchUsuario)        // Altera um usuário por ID
 
-	mux.HandleFunc("GET /local", crud.GetLocalizacaoTodos)     // Todas as localizações
-	mux.HandleFunc("GET /local/{id}", crud.GetLocalizacao)     // Localização por ID
+	mux.HandleFunc("GET /local", crud.GetLocalizacaoTodos)          // Todas as localizações
+	mux.HandleFunc("GET /local/{id}", crud.GetLocalizacao)          // Localização por ID
 
-	mux.HandleFunc("GET /corpo", crud.GetCorpoTodos)           // Todos os Corpos d'Água
-	mux.HandleFunc("GET /corpo/{id}", crud.GetCorpo)           // Corpos d'Água por ID
-	mux.HandleFunc("POST /corpo", crud.PostCorpo)              // Adicionar Corpo d'Água
-	mux.HandleFunc("DELETE /corpo/{id}", crud.DeleteCorpo)     // Remove um Corpo d'Água por ID
-	mux.HandleFunc("PATCH /corpo/{id}", crud.PatchCorpo)       // Altera um Corpo d'Água por ID
+	mux.HandleFunc("GET /corpo", crud.GetCorpoTodos)                // Todos os Corpos d'Água
+	mux.HandleFunc("GET /corpo/{id}", crud.GetCorpo)                // Corpos d'Água por ID
+	mux.HandleFunc("POST /corpo", crud.PostCorpo)                   // Adicionar Corpo d'Água
+	mux.HandleFunc("DELETE /corpo/{id}", crud.DeleteCorpo)          // Remove um Corpo d'Água por ID
+	mux.HandleFunc("PATCH /corpo/{id}", crud.PatchCorpo)            // Altera um Corpo d'Água por ID
+
+	mux.HandleFunc("GET /local/{id}/corpo", crud.GetLocalCorpo)     // Lista de corpos d'água em um local
+	mux.HandleFunc("GET /corpo/{id}/local", crud.GetCorpoLocal)     // Lista de locais de um Corpo d'Água
 
 	log.Output(0, "Servindo na porta 8080")
 	http.ListenAndServe(":8080", mux)

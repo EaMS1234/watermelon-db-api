@@ -12,7 +12,7 @@ import (
 type Localizacao struct{
 	Cidade string `json:"cidade"`
 	Estado string `json:"estado"`
-	ID_localizacao int `json:"id"`
+	ID_localizacao int `json:"id" gorm:"primaryKey"`
 }
 
 func (Localizacao) TableName() string {
