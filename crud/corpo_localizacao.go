@@ -10,7 +10,7 @@ import (
 
 type Corpo_Localizacao struct{
 	ID_Corpo_d_agua int `json:"corpo"`
-	ID_Localizacao int `json:"localizacao"`
+	ID_Localizacao int `json:"local"`
 	ID_corpo_localizacao int `json:"id" gorm:"primaryKey"`
 }
 
@@ -43,7 +43,7 @@ func GetCorpoLocal (w http.ResponseWriter, r *http.Request) {
 }
 
 func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET Local ID_Localizacao = " + r.PathValue("id"))
+	log.Output(1, "GET Corpo ID_Localizacao = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
@@ -64,5 +64,26 @@ func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(corpos)
 
+}
+
+func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "POST Local ID_Corpo_d_agua = " + r.PathValue("id"))
+
+	var corpo_local Corpo_Localizacao
+	json.NewDecoder(r.Body).Decode(&corpo_local)
+
+	banco.Banco().Create(&corpo_local)
+}
+
+func DeleteCorpoLocal (w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "DELETE Local ID_Localizacao " + r.PathValue("id_local") + " para o ID_Corpo_d_agua = " + r.PathValue("id"))
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
+	id_local, err := strconv.Atoi(r.PathValue("id_local"))
+	if err != nil {panic(err)}
+
+	banco.Banco().Delete(&Corpo_Localizacao{}, "ID_Corpo_d_agua = ? AND ID_Localizacao = ?", id, id_local)
 }
 
