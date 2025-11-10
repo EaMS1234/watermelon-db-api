@@ -87,3 +87,22 @@ func PatchUsuario(w http.ResponseWriter, r *http.Request) {
 	db.Save(&usuario)
 }
 
+func GetUsuarioRelatorio(w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "GET Relatorios ID_usuario = " + r.PathValue("id"))
+
+	db := banco.Banco()
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
+	var usuario Usuario
+	db.First(&usuario, id)
+
+	var relatorios []Relatorio
+	db.Find(&relatorios, "ID_Autor = ?", id)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(relatorios)
+}
+
