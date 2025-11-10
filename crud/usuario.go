@@ -52,7 +52,7 @@ func PostUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "Delete ID_usuario = " + r.PathValue("id"))
+	log.Output(1, "DELETE ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -67,6 +67,10 @@ func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
 
 	var usuarios []Usuario
 	db.Find(&usuarios)
+
+	for i := range usuarios {
+		usuarios[i].Senha = "";
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
