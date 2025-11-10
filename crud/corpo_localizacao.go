@@ -69,8 +69,13 @@ func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
 func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
 	log.Output(1, "POST Local ID_Corpo_d_agua = " + r.PathValue("id"))
 
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {panic(err)}
+
 	var corpo_local Corpo_Localizacao
 	json.NewDecoder(r.Body).Decode(&corpo_local)
+
+	corpo_local.ID_Corpo_d_agua = id
 
 	banco.Banco().Create(&corpo_local)
 }
