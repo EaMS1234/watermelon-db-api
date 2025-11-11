@@ -16,6 +16,8 @@ func main() {
 	mux.HandleFunc("DELETE /usuario/{id}", crud.DeleteUsuario)                   // Remove um usuário por ID
 	mux.HandleFunc("PATCH /usuario/{id}", crud.PatchUsuario)                     // Altera um usuário por ID
 
+	mux.HandleFunc("GET /usuario/{id}/foto", crud.GetUsuarioFoto)                // Foto de perfil de um usuário por ID
+
 	mux.HandleFunc("GET /relatorio", crud.GetRelatorioTodos)                     // Todos os relatórios
 	mux.HandleFunc("GET /relatorio/{id}", crud.GetRelatorio)                     // Relatório por ID
 	mux.HandleFunc("POST /relatorio", crud.PostRelatorio)												 // Adicionar relatório
