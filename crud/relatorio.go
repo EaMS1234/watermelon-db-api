@@ -38,7 +38,7 @@ func (Relatorio) TableName() string {
 }
 
 func GetRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_relatorio = " + r.PathValue("id"))
+	log.Output(0, "GET ID_relatorio = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -52,7 +52,7 @@ func GetRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "POST Relatorio")
+	log.Output(0, "POST Relatorio")
 
 	var relatorio Relatorio
 
@@ -62,7 +62,7 @@ func PostRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "DELETE ID_relatorio = " + r.PathValue("id"))
+	log.Output(0, "DELETE ID_relatorio = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -71,7 +71,7 @@ func DeleteRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetRelatorioTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET TODOS Relatorio")
+	log.Output(0, "GET TODOS Relatorio")
 
 	var relatorios []Relatorio
 	banco.Banco().Find(&relatorios)
@@ -82,7 +82,7 @@ func GetRelatorioTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "PATCH ID_relatorio = " + r.PathValue("id"))
+	log.Output(0, "PATCH ID_relatorio = " + r.PathValue("id"))
 
 	db := banco.Banco()
 

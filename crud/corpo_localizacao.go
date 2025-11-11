@@ -20,7 +20,7 @@ func (Corpo_Localizacao) TableName() string {
 
 
 func GetCorpoLocal (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET Local ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "GET Local ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
@@ -43,7 +43,7 @@ func GetCorpoLocal (w http.ResponseWriter, r *http.Request) {
 }
 
 func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET Corpo ID_Localizacao = " + r.PathValue("id"))
+	log.Output(0, "GET Corpo ID_Localizacao = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
@@ -67,7 +67,7 @@ func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
 }
 
 func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "POST Local ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "POST Local ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -81,7 +81,7 @@ func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteCorpoLocal (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "DELETE Local ID_Localizacao " + r.PathValue("id_local") + " para o ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "DELETE Local ID_Localizacao " + r.PathValue("id_local") + " para o ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}

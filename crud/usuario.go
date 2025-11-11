@@ -24,7 +24,7 @@ func (Usuario) TableName() string {
 
 
 func GetUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_usuario = " + r.PathValue("id"))
+	log.Output(0, "GET ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -38,7 +38,7 @@ func GetUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "POST Usuario")
+	log.Output(0, "POST Usuario")
 
 	var usuario Usuario;
 
@@ -48,7 +48,7 @@ func PostUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "DELETE ID_usuario = " + r.PathValue("id"))
+	log.Output(0, "DELETE ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -57,7 +57,7 @@ func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET TODOS Usuario")
+	log.Output(0, "GET TODOS Usuario")
 
 	var usuarios []Usuario
 	banco.Banco().Select("ID_usuario", "Nome_de_usuario", "E_mail").Find(&usuarios)
@@ -68,7 +68,7 @@ func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "PATCH ID_usuario = " + r.PathValue("id"))
+	log.Output(0, "PATCH ID_usuario = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
@@ -84,7 +84,7 @@ func PatchUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsuarioRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET Relatorios ID_usuario = " + r.PathValue("id"))
+	log.Output(0, "GET Relatorios ID_usuario = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
@@ -103,7 +103,7 @@ func GetUsuarioRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsuarioFoto (w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET Foto ID_usuario = " + r.PathValue("id"))
+	log.Output(0, "GET Foto ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}

@@ -21,7 +21,7 @@ func (Corpo) TableName() string {
 
 
 func GetCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "GET ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -36,7 +36,7 @@ func GetCorpo(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "POST Corpo_d_agua")
+	log.Output(0, "POST Corpo_d_agua")
 
 	var corpo Corpo;
 
@@ -46,7 +46,7 @@ func PostCorpo(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "DELETE ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "DELETE ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {panic(err)}
@@ -55,7 +55,7 @@ func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "GET TODOS Corpo_d_agua")
+	log.Output(0, "GET TODOS Corpo_d_agua")
 
 	var corpos []Corpo
 	banco.Banco().Find(&corpos)
@@ -66,7 +66,7 @@ func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(1, "PATCH ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(0, "PATCH ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
