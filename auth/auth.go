@@ -12,13 +12,7 @@ import (
 	"time"
 )
 
-type sessao struct {
-	ID_usuario int
-	Validade time.Time
-}
-
-var sessoes_global map[string]sessao = make(map[string]sessao)
-
+var sessoes_global map[string]int = make(map[string]int)
 
 func Validar (w http.ResponseWriter, r *http.Request) bool {
 	cookie_token, err := r.Cookie("token")
@@ -40,17 +34,12 @@ func Validar (w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	if sessoes_global[token].ID_usuario != id {
-		log.Output(1, "ID inválido")
+	if sessoes_global[token] != id {
+		log.Output(1, "Token/ID inválido")
 		return false
 	}
 
-	if sessoes_global[token].Validade.Before(time.Now()) {
-		log.Output(1, "Token expirou")
-		return false
-	}
-
-	log.Output(1, "Autenticado com sucesso!")
+	log.Output(1, token + " autenticado com sucesso")
 	return true
 }
 
@@ -96,9 +85,8 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-
 		// Salva a sessão localmente
-
+		sessoes_global[token] = usuario.ID_usuario
 
 		// Cria os cookies
 		cookie_token := http.Cookie {
@@ -113,19 +101,15 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 			Path: "/",
 		}
 
-
 		if form.Manter {
+			validade := time.Now().AddDate(0, 3, 0)
+
 			// Vence em um mês a partir de agora
-			sessoes_global[token] = sessao{usuario.ID_usuario, time.Now().AddDate(0, 1, 0)}
-			cookie_token.Expires = sessoes_global[token].Validade
-			cookie_usuario.Expires = sessoes_global[token].Validade
-		} else {
-			sessoes_global[token] = sessao{usuario.ID_usuario, time.Now()}
+			cookie_token.Expires = validade
+			cookie_usuario.Expires = validade
 		}
 
-
-		log.Output(1, "Sessão: " + token + " ID_usuario = " + strconv.Itoa(sessoes_global[token].ID_usuario))
-
+		log.Output(1, "Sessão: " + token + " ID_usuario = " + strconv.Itoa(sessoes_global[token]))
 
 		// Salva os cookies
 		http.SetCookie(w, &cookie_token)
