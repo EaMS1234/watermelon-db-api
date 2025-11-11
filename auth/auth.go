@@ -3,6 +3,7 @@ package auth
 import (
 	"api/banco"
 	"api/crud"
+	"errors"
 
 	"crypto/rand"
 	"encoding/json"
@@ -14,33 +15,35 @@ import (
 
 var sessoes_global map[string]int = make(map[string]int)
 
-func Validar (w http.ResponseWriter, r *http.Request) bool {
+func Validar (w http.ResponseWriter, r *http.Request) (int, error) {
 	cookie_token, err := r.Cookie("token")
 	if err != nil {
 		log.Output(1, "Não possui token")
-		return false
+		return 0, errors.New("Não possui token")
 	}
 
 	token := cookie_token.Value
 
 	if sessoes_global[token] == 0 {
 		log.Output(1, "Token inválido")
-		return false
+		return 0, errors.New("Token inválido")
 	}
 
 	log.Output(1, token + " autenticado com sucesso")
-	return true
+	return sessoes_global[token], nil
 }
 
 
 func GetAuth (w http.ResponseWriter, r *http.Request) {
 	log.Output(1, "GET Auth")
 
-	if Validar(w, r) {
-		w.WriteHeader(http.StatusOK)		
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
+	id, err := Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
 	}
+
+	json.NewEncoder(w).Encode(struct{Usuario int `json:"usuario"`}{id})
 }
 
 func PostAuth (w http.ResponseWriter, r *http.Request) {
