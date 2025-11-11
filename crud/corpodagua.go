@@ -58,7 +58,7 @@ func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusNotFound)
+		http.Error(w, "ID inválido", http.StatusBadRequest)
 		return
 	}
 
@@ -86,7 +86,7 @@ func PatchCorpo(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusNotFound)
+		http.Error(w, "ID inválido", http.StatusBadRequest)
 		return
 	}
 
