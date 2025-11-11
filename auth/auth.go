@@ -21,21 +21,10 @@ func Validar (w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	cookie_usuario, err := r.Cookie("usuario")
-	if err != nil {
-		log.Output(1, "Não possui ID")
-		return false
-	}
-
 	token := cookie_token.Value
-	id, err := strconv.Atoi(cookie_usuario.Value)
-	if err != nil {
-		log.Output(1, "ID não é um número")
-		return false
-	}
 
-	if sessoes_global[token] != id {
-		log.Output(1, "Token/ID inválido")
+	if sessoes_global[token] == 0 {
+		log.Output(1, "Token inválido")
 		return false
 	}
 
@@ -75,7 +64,6 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 		// Cria o token da sessão
 		var token string
 
-
 		// Gera um token novo até que ele seja único
 		for {
 			token = rand.Text()
@@ -93,12 +81,7 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 			Name: "token",
 			Value: token,
 			Path: "/",
-		}
-
-		cookie_usuario := http.Cookie {
-			Name: "usuario",
-			Value: strconv.Itoa(usuario.ID_usuario),
-			Path: "/",
+			HttpOnly: true,
 		}
 
 		if form.Manter {
@@ -106,14 +89,12 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 
 			// Vence em um mês a partir de agora
 			cookie_token.Expires = validade
-			cookie_usuario.Expires = validade
 		}
 
 		log.Output(1, "Sessão: " + token + " ID_usuario = " + strconv.Itoa(sessoes_global[token]))
 
 		// Salva os cookies
 		http.SetCookie(w, &cookie_token)
-		http.SetCookie(w, &cookie_usuario)
 
 		w.WriteHeader(http.StatusOK)
 		return
