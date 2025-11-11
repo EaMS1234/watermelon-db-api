@@ -3,7 +3,6 @@ USE watermelon_db;
 -- Limpa o banco antes de popular
 DELETE FROM Usuario;
 DELETE FROM Relatorio;
-DELETE FROM Localizacao;
 DELETE FROM Corpo_d_agua;
 DELETE FROM Corpo_Localizacao;
 
@@ -13,14 +12,6 @@ INSERT INTO Usuario (Nome_de_usuario, E_mail, Senha) VALUES
   ('Igor Angelo', 'igor@igor.com', 'l43gu30fl3g3'),
   ('Vinicius Gaioli', 'v@gaioli.br', 'all#mosso'),
   ('Vinicius Eduardo Murakami Moreira Pittoli', 'viniciuseduardomurakamimoreirapittoli@v.emmp.com.br', 'e4e5Bc4Nc6D');
-
-INSERT INTO Localizacao (Cidade, Estado) VALUES
-  ('São João da Boa Vista', 'sp'),
-  ('Aguaí', 'sp'),
-  ('São Paulo', 'sp'),
-  ('Rio de Janeiro', 'rj'),
-  ('Belo Horizonte', 'mg'),
-  ('Salvador', 'ba');
 
 INSERT INTO Corpo_d_agua (Nome, Tipo) VALUES
   ('Rio Jaguari-Mirim', 'rio'),
