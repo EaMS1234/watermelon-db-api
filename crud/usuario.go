@@ -3,6 +3,7 @@ package crud
 import (
 	"api/banco"
 	"log"
+	"strings"
 
 	"encoding/base64"
 	"encoding/json"
@@ -24,13 +25,19 @@ func (Usuario) TableName() string {
 
 
 func GetUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET ID_usuario = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var usuario Usuario
-	banco.Banco().Select("ID_usuario", "Nome_de_usuario", "E_mail", "Foto_de_Perfil").First(&usuario, id)
+	if banco.Banco().Select("ID_usuario", "Nome_de_usuario", "E_mail", "Foto_de_Perfil").First(&usuario, id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound) // ID não existe
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -38,26 +45,40 @@ func GetUsuario(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "POST Usuario")
+	log.Output(1, r.RemoteAddr + " POST Usuario")
 
 	var usuario Usuario;
 
-	json.NewDecoder(r.Body).Decode(&usuario)
+	if json.NewDecoder(r.Body).Decode(&usuario) != nil {
+		http.Error(w, "Campo inválido", http.StatusBadRequest)
+		return
+	}
 
-	banco.Banco().Create(&usuario)
+	if err := banco.Banco().Create(&usuario).Error; err != nil {
+		if strings.Contains(err.Error(), "1062") {
+			http.Error(w, "E-Mail já existe", http.StatusConflict) // único campo unique é o E-Mail
+			return
+		}
+	}
 }
 
 func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "DELETE ID_usuario = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " DELETE ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
-	banco.Banco().Delete(&Usuario{}, id)
+	if banco.Banco().Delete(&Usuario{}, id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound) // não foi possível encontrar no banco de dados
+		return
+	}
 }
 
 func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET TODOS Usuario")
+	log.Output(1, r.RemoteAddr + " GET TODOS Usuario")
 
 	var usuarios []Usuario
 	banco.Banco().Select("ID_usuario", "Nome_de_usuario", "E_mail").Find(&usuarios)
@@ -68,34 +89,49 @@ func GetUsuarioTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchUsuario(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "PATCH ID_usuario = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " PATCH ID_usuario = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var usuario Usuario
 	db.First(&usuario, id)
 
-	json.NewDecoder(r.Body).Decode(&usuario)
+	if json.NewDecoder(r.Body).Decode(&usuario) != nil {
+		http.Error(w, "Campo inválido", http.StatusBadRequest)
+		return
+	}
 
 	db.Save(&usuario)
 }
 
 func GetUsuarioRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET Relatorios ID_usuario = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET Relatorios ID_usuario = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var usuario Usuario
-	db.First(&usuario, id)
+	if db.First(&usuario, id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound)
+		return
+	}
 
 	var relatorios []Relatorio
-	db.Find(&relatorios, "ID_Autor = ?", id)
+	if db.Find(&relatorios, "ID_Autor = ?", id).Error != nil {
+		http.Error(w, "Não há relatórios", http.StatusNotFound)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -103,20 +139,26 @@ func GetUsuarioRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsuarioFoto (w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET Foto ID_usuario = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET Foto ID_usuario = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var usuario Usuario;
 	banco.Banco().Select("Foto_de_Perfil").First(&usuario, id)
 
 	imagem, err := base64.StdEncoding.DecodeString(usuario.Foto_de_Perfil)
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "Não foi possível obter a imagem", http.StatusInternalServerError)
+		return
+	}
 
 	if usuario.Foto_de_Perfil == "" {
 		// Não possui foto de perfil
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, "Não foi possível encontrar a foto de perfil", http.StatusNotFound)
 		return
 	}
 
