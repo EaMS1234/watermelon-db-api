@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/auth"
 	"api/crud"
 
 	"log"
@@ -40,6 +41,10 @@ func main() {
 	
 	mux.HandleFunc("POST /corpo/{id}/local", crud.PostCorpoLocal)                // Atribui um local a um corpo d'água
 	mux.HandleFunc("DELETE /corpo/{id}/local/{id_local}", crud.DeleteCorpoLocal) // Remove um local de um corpo d'água
+
+	mux.HandleFunc("GET /auth", auth.GetAuth)                                    // Status atual da autenticação
+	mux.HandleFunc("POST /auth", auth.PostAuth)                                  // Autenticar
+	mux.HandleFunc("DELETE /auth", auth.DeleteAuth)                              // Deslogar
 
 	log.Output(0, "Servindo na porta 8080")
 	http.ListenAndServe(":8080", mux)

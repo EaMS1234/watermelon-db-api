@@ -39,7 +39,7 @@ func GetAuth (w http.ResponseWriter, r *http.Request) {
 
 	id, err := Validar(w, r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -109,6 +109,28 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAuth (w http.ResponseWriter, r *http.Request) {
+	log.Output(1, "DELETE Auth")
 
+	token, err := r.Cookie("token")
+	if err != nil {
+		log.Output(1, "Não possui token")
+		http.Error(w, "Não possui token", http.StatusBadRequest)
+		return
+	}
+
+	sessoes_global[token.Value] = 0
+
+	log.Output(1, token.Value + " Removido")
+
+	// Inutiliza o cookie token
+	cookie := http.Cookie {
+		Name: "token",
+		Value: "",
+		Path: "/",
+		Expires: time.Unix(0, 0),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, &cookie)
 }
 
