@@ -21,14 +21,27 @@ func (Localizacao) TableName() string {
 
 
 func GetLocalizacao(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET ID_localizacao = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET ID_localizacao = " + r.PathValue("id"))
 
-	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		var local []Localizacao
+		if banco.Banco().Where("Estado = ?", r.PathValue("id")).Find(&local).Error != nil {
+			http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+			return
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(local)
+			return
+		}
+	}
 
 	var local Localizacao
-	db.First(&local, "ID_localizacao = ?", id)
+	if banco.Banco().First(&local, "ID_localizacao = ?", id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound) // não foi possível encontrar
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -36,7 +49,7 @@ func GetLocalizacao(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetLocalizacaoTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET TODOS Localizacao")
+	log.Output(1, r.RemoteAddr + " GET TODOS Localizacao")
 
 	db := banco.Banco()
 
