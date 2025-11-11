@@ -21,14 +21,19 @@ func (Corpo) TableName() string {
 
 
 func GetCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET ID_Corpo_d_agua = " + r.PathValue("id"))
 
-	db := banco.Banco()
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var corpo Corpo
-	db.First(&corpo, "ID_Corpo_d_agua = ?", id)
+	if banco.Banco().First(&corpo, "ID_Corpo_d_agua = ?", id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -36,26 +41,35 @@ func GetCorpo(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "POST Corpo_d_agua")
+	log.Output(1, r.RemoteAddr + " POST Corpo_d_agua")
 
 	var corpo Corpo;
 
-	json.NewDecoder(r.Body).Decode(&corpo)
+	if json.NewDecoder(r.Body).Decode(&corpo) != nil {	
+		http.Error(w, "Campo Inválido", http.StatusBadRequest)
+		return
+	}
 
-	banco.Banco().Create(&corpo)
+	banco.Banco().Create(&corpo) // Não precisa verificar por duplicatas
 }
 
 func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "DELETE ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " DELETE ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusNotFound)
+		return
+	}
 
-	banco.Banco().Delete(&Corpo{}, id)
+	if banco.Banco().Delete(&Corpo{}, id).Error != nil {
+		http.Error(w, "ID inexistente", http.StatusNotFound)
+		return
+	}
 }
 
 func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET TODOS Corpo_d_agua")
+	log.Output(1, r.RemoteAddr + " GET TODOS Corpo_d_agua")
 
 	var corpos []Corpo
 	banco.Banco().Find(&corpos)
@@ -66,17 +80,23 @@ func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchCorpo(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "PATCH ID_Corpo_d_agua = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " PATCH ID_Corpo_d_agua = " + r.PathValue("id"))
 
 	db := banco.Banco()
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusNotFound)
+		return
+	}
 
 	var corpo Corpo
 	db.First(&corpo, id)
 
-	json.NewDecoder(r.Body).Decode(&corpo)
+	if json.NewDecoder(r.Body).Decode(&corpo) != nil {
+		http.Error(w, "Campo Inválido", http.StatusBadRequest)
+		return
+	}
 
 	db.Save(&corpo)
 }
