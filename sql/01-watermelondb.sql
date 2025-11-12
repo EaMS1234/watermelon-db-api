@@ -2,6 +2,13 @@ DROP DATABASE IF EXISTS watermelon_db;
 CREATE DATABASE watermelon_db;
 USE watermelon_db;
 
+
+DROP USER IF EXISTS watermelon;
+CREATE USER 'watermelon'@'%' IDENTIFIED BY 'watermelon';
+GRANT ALL PRIVILEGES ON watermelon_db.* TO 'watermelon'@'%';
+FLUSH PRIVILEGES;
+
+
 CREATE TABLE Usuario (
     Nome_de_usuario VARCHAR(200) NOT NULL,
     E_mail VARCHAR(100) UNIQUE NOT NULL,

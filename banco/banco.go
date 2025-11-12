@@ -6,7 +6,7 @@ import (
 )
 
 func Banco() *gorm.DB {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:3306)/watermelon_db"), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open("watermelon:watermelon@tcp(db:3306)/watermelon_db"), &gorm.Config{})
 	if err != nil {panic(err)}
 
 	return db

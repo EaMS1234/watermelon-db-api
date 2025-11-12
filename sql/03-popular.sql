@@ -76,5 +76,3 @@ INSERT INTO Relatorio (Tipo_de_relatorio, data, Descricao, Cor_aparente, ID_Auto
   0.031
 );
 
-----------------------
-
