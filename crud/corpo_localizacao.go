@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"api/auth"
 	"api/banco"
 	"encoding/json"
 	"log"
@@ -80,6 +81,12 @@ func GetLocalCorpo (w http.ResponseWriter, r *http.Request) {
 func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " POST Local ID_Corpo_d_agua = " + r.PathValue("id"))
 
+	_, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
@@ -97,6 +104,12 @@ func PostCorpoLocal (w http.ResponseWriter, r *http.Request) {
 func DeleteCorpoLocal (w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " DELETE Local ID_Localizacao " + r.PathValue("id_local") + " para o ID_Corpo_d_agua = " + r.PathValue("id"))
 
+	_, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
@@ -110,7 +123,7 @@ func DeleteCorpoLocal (w http.ResponseWriter, r *http.Request) {
 	}
 
 	if banco.Banco().Delete(&Corpo_Localizacao{}, "ID_Corpo_d_agua = ? AND ID_Localizacao = ?", id, id_local).Error != nil {
-		http.Error(w, "ID inexistente", http.StatusNotFound)
+		http.Error(w, "Não foi possível deletar", http.StatusForbidden)
 		return
 	}
 }

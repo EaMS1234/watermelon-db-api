@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"api/auth"
 	"api/banco"
 	"log"
 	"strings"
@@ -71,6 +72,17 @@ func DeleteUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	id_sessao, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	if id_sessao != id {
+		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
+		return
+	}
+
 	if banco.Banco().Delete(&Usuario{}, id).Error != nil {
 		http.Error(w, "ID inexistente", http.StatusNotFound) // não foi possível encontrar no banco de dados
 		return
@@ -96,6 +108,17 @@ func PatchUsuario(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
+
+	id_sessao, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	if id_sessao != id {
+		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
 		return
 	}
 

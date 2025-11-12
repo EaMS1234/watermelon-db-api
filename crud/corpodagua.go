@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"api/auth"
 	"api/banco"
 	"log"
 
@@ -45,6 +46,12 @@ func PostCorpo(w http.ResponseWriter, r *http.Request) {
 
 	var corpo Corpo;
 
+	_, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	if json.NewDecoder(r.Body).Decode(&corpo) != nil {	
 		http.Error(w, "Campo Inválido", http.StatusBadRequest)
 		return
@@ -62,8 +69,14 @@ func DeleteCorpo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	if banco.Banco().Delete(&Corpo{}, id).Error != nil {
-		http.Error(w, "ID inexistente", http.StatusNotFound)
+		http.Error(w, "Não pode ser deletado", http.StatusForbidden)
 		return
 	}
 }
@@ -87,6 +100,12 @@ func PatchCorpo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	_, err = auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 

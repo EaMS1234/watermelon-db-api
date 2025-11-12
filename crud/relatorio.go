@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"api/auth"
 	"api/banco"
 	"encoding/json"
 	"log"
@@ -57,9 +58,17 @@ func GetRelatorio(w http.ResponseWriter, r *http.Request) {
 func PostRelatorio(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " POST Relatorio")
 
+	id, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	var relatorio Relatorio
 
 	json.NewDecoder(r.Body).Decode(&relatorio)
+
+	relatorio.ID_Autor = id
 
 	if banco.Banco().Create(&relatorio).Error != nil {
 		http.Error(w, "Campo inválido", http.StatusBadRequest)
@@ -70,13 +79,29 @@ func PostRelatorio(w http.ResponseWriter, r *http.Request) {
 func DeleteRelatorio(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " DELETE ID_relatorio = " + r.PathValue("id"))
 
+	db := banco.Banco()
+
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Campo inválido", http.StatusBadRequest)
 		return
 	}
 
-	banco.Banco().Delete(&Relatorio{}, id)	
+	id_sessao, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	var relatorio Relatorio
+	db.First(&relatorio, id)
+
+	if id_sessao != relatorio.ID_Autor {
+		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
+		return
+	}
+
+	db.Delete(&Relatorio{}, id)	
 }
 
 func GetRelatorioTodos(w http.ResponseWriter, r *http.Request) {
@@ -100,12 +125,23 @@ func PatchRelatorio(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID Inválido", http.StatusBadRequest)
 		return
 	}
-
+	
 	var relatorio Relatorio
 	db.First(&relatorio, id)
 
 	json.NewDecoder(r.Body).Decode(&relatorio)
-	
+
+	id_sessao, err := auth.Validar(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	if id_sessao != relatorio.ID_Autor {
+		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
+		return
+	}
+
 	if db.Save(&relatorio).Error != nil {
 		http.Error(w, "Campo inválido", http.StatusBadRequest)
 		return
