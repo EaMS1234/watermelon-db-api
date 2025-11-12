@@ -38,10 +38,13 @@ func (Relatorio) TableName() string {
 }
 
 func GetRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET ID_relatorio = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " GET ID_relatorio = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest) // não foi possível converter em inteiro
+		return
+	}
 
 	var relatorio Relatorio
 	banco.Banco().First(&relatorio, id)
@@ -52,26 +55,32 @@ func GetRelatorio(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "POST Relatorio")
+	log.Output(1, r.RemoteAddr + " POST Relatorio")
 
 	var relatorio Relatorio
 
 	json.NewDecoder(r.Body).Decode(&relatorio)
 
-	banco.Banco().Create(&relatorio)
+	if banco.Banco().Create(&relatorio).Error != nil {
+		http.Error(w, "Campo inválido", http.StatusBadRequest)
+		return
+	}
 }
 
 func DeleteRelatorio(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "DELETE ID_relatorio = " + r.PathValue("id"))
+	log.Output(1, r.RemoteAddr + " DELETE ID_relatorio = " + r.PathValue("id"))
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "Campo inválido", http.StatusBadRequest)
+		return
+	}
 
 	banco.Banco().Delete(&Relatorio{}, id)	
 }
 
 func GetRelatorioTodos(w http.ResponseWriter, r *http.Request) {
-	log.Output(0, "GET TODOS Relatorio")
+	log.Output(1, r.RemoteAddr + " GET TODOS Relatorio")
 
 	var relatorios []Relatorio
 	banco.Banco().Find(&relatorios)
@@ -87,13 +96,19 @@ func PatchRelatorio(w http.ResponseWriter, r *http.Request) {
 	db := banco.Banco()
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {panic(err)}
+	if err != nil {
+		http.Error(w, "ID Inválido", http.StatusBadRequest)
+		return
+	}
 
 	var relatorio Relatorio
 	db.First(&relatorio, id)
 
 	json.NewDecoder(r.Body).Decode(&relatorio)
 	
-	db.Save(&relatorio)
+	if db.Save(&relatorio).Error != nil {
+		http.Error(w, "Campo inválido", http.StatusBadRequest)
+		return
+	}
 }
 
