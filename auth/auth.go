@@ -2,7 +2,6 @@ package auth
 
 import (
 	"api/banco"
-	"api/crud"
 	"errors"
 
 	"crypto/rand"
@@ -12,6 +11,18 @@ import (
 	"strconv"
 	"time"
 )
+
+type Usuario struct{
+	Nome_de_usuario string `json:"nome"`
+	E_mail string `json:"email"`
+	Senha string `json:"senha"`
+	Foto_de_Perfil string `json:"foto"`
+	ID_usuario int `json:"id" gorm:"primaryKey"`
+}
+
+func (Usuario) TableName() string {
+	return "Usuario"
+}
 
 var sessoes_global map[string]int = make(map[string]int)
 
@@ -57,7 +68,7 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&form)
 
-	var usuario crud.Usuario
+	var usuario Usuario
 	banco.Banco().Select("E_mail", "Senha", "ID_usuario").First(&usuario, "E_mail = ?", form.Email)
 
 	if usuario.Senha == form.Senha {
