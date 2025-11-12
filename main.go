@@ -28,7 +28,7 @@ func main() {
 	mux.HandleFunc("GET /usuario/{id}/relatorio", crud.GetUsuarioRelatorio)      // Todos os relatórios de um usuário
 
 	mux.HandleFunc("GET /local", crud.GetLocalizacaoTodos)                       // Todas as localizações
-	mux.HandleFunc("GET /local/{id}", crud.GetLocalizacao)                       // Localização por ID
+	mux.HandleFunc("GET /local/{id}", crud.GetLocalizacao)                       // Localização por ID ou Estado
 
 	mux.HandleFunc("GET /corpo", crud.GetCorpoTodos)                             // Todos os Corpos d'Água
 	mux.HandleFunc("GET /corpo/{id}", crud.GetCorpo)                             // Corpos d'Água por ID
