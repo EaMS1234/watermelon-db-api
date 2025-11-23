@@ -69,7 +69,10 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&form)
 
 	var usuario Usuario
-	banco.Banco().Select("E_mail", "Senha", "ID_usuario").First(&usuario, "E_mail = ?", form.Email)
+	if err := banco.Banco().Select("E_mail", "Senha", "ID_usuario").First(&usuario, "E_mail = ?", form.Email).Error; err != nil {
+		http.Error(w, "Usuário inválido.", http.StatusBadRequest)
+		return
+	}
 
 	if usuario.Senha == form.Senha {
 		// Login com sucesso
@@ -96,6 +99,8 @@ func PostAuth (w http.ResponseWriter, r *http.Request) {
 			Value: token,
 			Path: "/",
 			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
 		}
 
 		if form.Manter {
@@ -140,6 +145,8 @@ func DeleteAuth (w http.ResponseWriter, r *http.Request) {
 		Path: "/",
 		Expires: time.Unix(0, 0),
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure: true,
 	}
 
 	http.SetCookie(w, &cookie)
