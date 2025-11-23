@@ -2,6 +2,8 @@ services:
   api:
     build: .
     restart: always
+    ports:
+      - "8080:8080"
     depends_on:
       - db
 
@@ -15,5 +17,8 @@ services:
       MYSQL_USER: watermelon
       MYSQL_PASSWORD: watermelon
     volumes:
+      - data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
 
+volumes:
+  data:
