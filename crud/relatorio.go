@@ -11,8 +11,10 @@ import (
 
 type Relatorio struct{
 	ID_relatorio int `json:"id" gorm:"primaryKey"`
-	ID_Autor int `json:"autor"`
-	ID_Corpo_d_agua int `json:"corpo"`
+	ID_Autor int `json:"autor_id"`
+	Autor Usuario `json:"autor" gorm:"foreignKey:ID_Autor;references:ID_usuario"` 
+	ID_Corpo_d_agua int `json:"corpo_id"`
+	Corpo_d_agua Corpo `json:"corpo" gorm:"foreignKey:ID_Corpo_d_agua;references:ID_Corpo_d_agua"`
 	Tipo_de_relatorio string `json:"tipo"`
 	Data string `json:"data"`
 	Descricao string `json:"descricao"`
@@ -48,7 +50,8 @@ func GetRelatorio(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var relatorio Relatorio
-	banco.Banco().First(&relatorio, id)
+	banco.Banco().Preload("Autor").Preload("Corpo_d_agua").First(&relatorio, id)
+	relatorio.Autor.Senha = ""
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -108,7 +111,11 @@ func GetRelatorioTodos(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " GET TODOS Relatorio")
 
 	var relatorios []Relatorio
-	banco.Banco().Find(&relatorios)
+	banco.Banco().Preload("Autor").Preload("Corpo_d_agua").Find(&relatorios)
+
+	for i := range relatorios {
+		relatorios[i].Autor.Senha = ""
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
