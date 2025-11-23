@@ -14,6 +14,7 @@ type Corpo struct{
 	Nome string `json:"nome"`
 	Tipo string `json:"tipo"`
 	ID_Corpo_d_agua int `json:"id" gorm:"primaryKey"`
+	Locais []Localizacao `json:"local" gorm:"many2many:Corpo_Localizacao;joinForeignKey:ID_Corpo_d_agua;JoinReferences:ID_Localizacao"`
 }
 
 func (Corpo) TableName() string {
@@ -31,7 +32,7 @@ func GetCorpo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var corpo Corpo
-	if banco.Banco().First(&corpo, "ID_Corpo_d_agua = ?", id).Error != nil {
+	if banco.Banco().Preload("Locais").First(&corpo, "ID_Corpo_d_agua = ?", id).Error != nil {
 		http.Error(w, "ID inexistente", http.StatusNotFound)
 		return
 	}
@@ -85,7 +86,7 @@ func GetCorpoTodos(w http.ResponseWriter, r *http.Request) {
 	log.Output(1, r.RemoteAddr + " GET TODOS Corpo_d_agua")
 
 	var corpos []Corpo
-	banco.Banco().Find(&corpos)
+	banco.Banco().Preload("Locais").Find(&corpos)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

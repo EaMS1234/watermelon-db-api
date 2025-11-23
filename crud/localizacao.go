@@ -13,6 +13,7 @@ type Localizacao struct{
 	Cidade string `json:"cidade"`
 	Estado string `json:"estado"`
 	ID_localizacao int `json:"id" gorm:"primaryKey"`
+	Corpos []Corpo `json:"corpo" gorm:"many2many:Corpo_Localizacao;joinForeignKey:ID_Localizacao;JoinReferences:ID_Corpo_d_agua"`
 }
 
 func (Localizacao) TableName() string {
@@ -38,7 +39,7 @@ func GetLocalizacao(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var local Localizacao
-	if banco.Banco().First(&local, "ID_localizacao = ?", id).Error != nil {
+	if banco.Banco().Preload("Corpos").First(&local, "ID_localizacao = ?", id).Error != nil {
 		http.Error(w, "ID inexistente", http.StatusNotFound) // não foi possível encontrar
 		return
 	}
@@ -54,7 +55,7 @@ func GetLocalizacaoTodos(w http.ResponseWriter, r *http.Request) {
 	db := banco.Banco()
 
 	var locais []Localizacao
-	db.Find(&locais)
+	db.Preload("Corpos").Find(&locais)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
