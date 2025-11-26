@@ -8,14 +8,14 @@ services:
       - db
 
   db:
-    image: mysql
+    image: mariadb
     container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: watermelon_db
-      MYSQL_USER: watermelon
-      MYSQL_PASSWORD: watermelon
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: watermelon_db
+      MARIADB_USER: watermelon
+      MARIADB_PASSWORD: watermelon
     volumes:
       - data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
